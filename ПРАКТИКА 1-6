@@ -1,0 +1,236 @@
+1).........................................................................................................................
+
+#include <iostream>
+#include <vector>
+
+// тут находятся простые функции для операций
+double add(double a, double b) { return a + b; }
+double subtract(double a, double b) { return a - b; }
+double multiply(double a, double b) { return a * b; }
+double divide(double a, double b) {
+    if (b == 0) {
+        std::cerr << "Ошибка: делить на ноль нельзя ну ты шо" << std::endl;
+        return 0; 
+    }
+    return a / b;
+}
+
+int main() {
+    // первым делом создаем массив указателей на функции
+    using Operation = double (*)(double, double); // тип указателя на функцию
+    std::vector<Operation> operations = {add, subtract, multiply, divide};
+
+    // теперь мы запрашиваем у пользователя числа и операцию
+    double num1, num2;
+    int choice;
+
+    std::cout << "какое первое число йоу? ";
+    std::cin >> num1;
+
+    std::cout << "какое второе число йоу? ";
+    std::cin >> num2;
+
+    std::cout << "выбири действие :\n";
+    std::cout << "1. сложение\n";
+    std::cout << "2. вычитание\n";
+    std::cout << "3. умножение\n";
+    std::cout << "4. деление\n";
+    std::cout << "чо выбираете?: ";
+    std::cin >> choice;
+
+    // теперь после этого проверяем выбор пользователя
+    if (choice < 1 || choice > 4) {
+        std::cerr << "ошибка не правильный выбор!" << std::endl;
+        return 1; //возвращаем код ошибки
+    }
+
+    // тут вызываем функцию через указатель
+    Operation selectedOperation = operations[choice - 1]; // получаем указатель
+    double result = selectedOperation(num1, num2); // вызываем функцию
+
+    // и наконец выводим результат
+    std::cout << "Результат: " << result << std::endl;
+
+    return 0;
+}
+
+2).........................................................................................................................
+
+#include <iostream>
+#include <vector>
+#include <algorithm> // для std::for_each
+
+// Функция, принимающая вектор и указатель на функцию
+void modifyVector(std::vector<int>& vec, int (*operation)(int)) {
+    for (int& element : vec) {
+        element = operation(element); // Применяем операцию к каждому элементу
+    }
+}
+
+
+int main() {
+    std::vector<int> numbers = {1, 2, 3, 4, 5};
+
+    std::cout << "Исходный вектор: ";
+    for (int num : numbers) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+    // 1. Удваиваем значения (лямбда)
+    modifyVector(numbers, [](int x) { return x * 2; });
+    std::cout << "Удвоенный вектор: ";
+    for (int num : numbers) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+     // 2. Возводим в квадрат (лямбда)
+     modifyVector(numbers, [](int x) { return x * x; });
+    std::cout << "Возведенный в квадрат вектор: ";
+    for (int num : numbers) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+     // Пример с алгоритмом for_each
+    std::vector<int> numbers2 = {1, 2, 3, 4, 5};
+
+     std::cout << "Исходный вектор2: ";
+     for (int num : numbers2) {
+        std::cout << num << " ";
+     }
+     std::cout << std::endl;
+
+    std::for_each(numbers2.begin(), numbers2.end(), [](int &x) { x = x *2;});
+    std::cout << "Удвоенный вектор2: ";
+    for (int num : numbers2) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+
+    return 0;
+}
+
+3).........................................................................................................................
+
+#include <iostream>
+#include <vector>
+#include <algorithm> // std::for_each
+
+int main() {
+  std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  std::cout << "исходный вектор ";
+  for (int num : numbers) {
+    std::cout << num << " ";
+  }
+  std::cout << std::endl;
+
+  //  тут мы увеличиваем каждый элемент на 5
+  std::for_each(numbers.begin(), numbers.end(), [](int &num) {
+      num += 5;
+  });
+
+  std::cout << "увеличенный на 5 вектор: ";
+  for (int num : numbers) {
+    std::cout << num << " ";
+  }
+  std::cout << std::endl;
+
+  //  тут выводим только чётные элементы
+    std::cout << "Чётные элементы: ";
+    std::for_each(numbers.begin(), numbers.end(), [](int num) {
+        if (num % 2 == 0) {
+            std::cout << num << " ";
+        }
+    });
+    std::cout << std::endl;
+
+  return 0;
+}
+
+4).........................................................................................................................
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm> // std::sort
+
+int main() {
+    std::vector<std::string> strings = {"apple", "banana", "kiwi", "orange", "grape"};
+
+    std::cout << "исходный вектор строк:\n";
+    for (const auto& str : strings) {
+        std::cout << str << " ";
+    }
+    std::cout << std::endl;
+
+    // тут происходит сортировка по длине строк
+    std::sort(strings.begin(), strings.end(), [](const std::string& a, const std::string& b) {
+        return a.length() < b.length(); // сортировка по возрастанию длины
+    });
+
+    std::cout << "\n сортировка по длине строк:\n";
+    for (const auto& str : strings) {
+        std::cout << str << " ";
+    }
+    std::cout << std::endl;
+
+    // сортировка в обратном лексикографическом порядке
+    std::sort(strings.begin(), strings.end(), [](const std::string& a, const std::string& b) {
+        return a > b; // сортировка в обратном лексикографическом порядке
+    });
+
+    std::cout << "\n сортировка в обратном лексикографическом порядке:\n";
+    for (const auto& str : strings) {
+        std::cout << str << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+
+5).........................................................................................................................
+
+#include <iostream>
+#include <functional>
+
+// НУ НАПРИМЕР ВОТ ТУТ У НАС ОБЫЧНАЯ ФУНКЦИЯ
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    // А ВОТ ТАК ВЫГЛЯДИТ УКАЗАТЕЛЬ НА ФУНКЦИЮ 
+    int (*funcPtr)(int, int) = add; // хранит "адрес" функции add
+    std::cout << "результат через указатель: " << funcPtr(5, 3) << std::endl;
+
+
+    // 3. std::function
+    std::function<int(int, int)> funcObj = add; // хранит функцию add
+    std::cout << "результат через std::function (функция): " << funcObj(5, 3) << std::endl;
+
+    // 4. std::function и лямбда 
+    int factor = 2;
+    auto multiplyByFactor = [factor](int x, int y) { return x * y * factor; };
+    funcObj = multiplyByFactor; // std::function может хранить лямбду
+    std::cout << "Результат через std::function (лямбда): " << funcObj(5, 3) << std::endl;
+
+    return 0;
+}
+//вот и все
+6).........................................................................................................................
+Сигнатура std::function:
+std::function<тип_возвращаемого_значения(тип_аргумента1, тип_аргумента2, ...)> имя_объекта;
+
+примеры объявления объекта std::function:/
+
+1.функция которая принимает два int и возвращает int и вот как она выглядит:
+std::function<int(int, int)> myAdder;
+
+2.а вот это уже функция которая принимает double и ничего не возвращает (void):
+std::function<void(double)> myPrinter;
+
+3.и наконец функция которая не принимает аргументов и возвращает bool:
+std::function<bool()> myChecker;
